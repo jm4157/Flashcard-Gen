@@ -36,9 +36,14 @@ OFFSETS_BACK = [
 class CardInfo:
     """Holds all the information for a single flashcard.
     """
-    def __init__(self, front, back):
-        self.front = front
-        self.back = back
+    def __init__(self, img, wrd_chn, wrd_eng, phon, xmpl_chn, xmpl_eng, qr):
+        self.img      = img
+        self.wrd_chn  = wrd_chn
+        self.wrd_eng  = wrd_eng
+        self.phon     = phon
+        self.xmpl_chn = xmpl_chn
+        self.xmpl_eng = xmpl_eng
+        self.qr       = qr
 
 
 def draw_cardset(cards: list[CardInfo], canvas: Canvas):
