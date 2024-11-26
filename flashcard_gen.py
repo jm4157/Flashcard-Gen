@@ -6,27 +6,28 @@ generates a pdf of flashcards of those words.
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.units import inch
-from reportlab.pdfbase.pdfmetrics import stringWidth, getFont, registerFont
-from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+from reportlab.pdfbase.pdfmetrics import stringWidth, registerFont
 from reportlab.pdfbase.ttfonts import TTFont
 from PIL import Image
 
 
-MRGN_HORZ = int(0.75 * inch)
-MRGN_VERT = int(1 * inch)       # MRGN is the length of the page margin
-SPC_HORZ  = int(1 * inch)
-SPC_VERT  = int(1 * inch)       # SPC is the space between the cards
-CARD_WDTH = int(3 * inch)
-CARD_HGHT = int(4 * inch)
-# The program asumes that 2MRGN_HORZ + 2CARD_WIDTH + SPC_HORZ = 11 inches and
-# 2MRGN_VERT + 2CARD_HGHT + SPC_VERT = 8.5 inches to fit US letter paper
+MRGN_HORZ = int(0.2 * inch)
+MRGN_VERT = int(0.4 * inch)       # MRGN is the length of the page margin
+SPC_HORZ  = int(0.1 * inch)
+SPC_VERT  = int(0.2 * inch)       # SPC is the space between the cards
+CARD_WDTH = int(4 * inch)
+CARD_HGHT = int(5 * inch)
+# The program asumes that 2MRGN_VERT + 2CARD_HGHT + SPC_VERT = 11 inches and
+# 2MRGN_HORZ + 2CARD_WDTH + SPC_HORZ = 8.5 inches to fit US letter paper
 
-SPC_TNY = 7
-SPC_SML = 14
-SPC_LG = 28
-HGHT_IMG = 72
-HGHT_TXT = 15
-SZ_QR = 28
+SPC_TNY    = 7
+SPC_SML    = 14
+SPC_LG     = 28
+HGHT_IMG   = 144
+HGHT_TXT   = 15
+SZ_QR      = 28
+SZ_FNT_LG  = 20
+SZ_FNT_SML = 16
 
 OFFSETS = [
     (MRGN_HORZ,                        MRGN_VERT), 
@@ -78,24 +79,24 @@ def draw_card(data: CardInfo, canvas: Canvas, offset_x: int, offset_y: int):
 
     canvas.drawInlineImage("qr/" + data.qr, offset_x + CARD_WDTH - SPC_TNY - SZ_QR, offset_y + SPC_TNY, SZ_QR, SZ_QR)
 
-    canvas.setFont('NotoSans', 11)
-    x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(data.xmpl_eng, 'NotoSans', 11) / 2)
+    canvas.setFont('NotoSans', SZ_FNT_SML)
+    x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(data.xmpl_eng, 'NotoSans', SZ_FNT_SML) / 2)
     y = offset_y + 2* SPC_LG
     canvas.drawString(x, y, data.xmpl_eng)
 
-    canvas.setFont('NotoSansSC', 11)
-    x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(data.xmpl_chn, 'NotoSansSC', 11) / 2)
+    canvas.setFont('NotoSansSC', SZ_FNT_SML)
+    x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(data.xmpl_chn, 'NotoSansSC', SZ_FNT_SML) / 2)
     y += HGHT_TXT + SPC_SML
     canvas.drawString(x, y, data.xmpl_chn)
 
-    canvas.setFont('NotoSans', 14)
+    canvas.setFont('NotoSans', SZ_FNT_LG)
     ln = data.wrd_eng + " - " + data.phon
-    x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(ln, 'NotoSans', 14) / 2)
+    x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(ln, 'NotoSans', SZ_FNT_LG) / 2)
     y += HGHT_TXT + SPC_LG
     canvas.drawString(x, y, ln)
 
-    canvas.setFont('NotoSansSC', 14)
-    x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(data.wrd_chn, 'NotoSansSC', 14) / 2)
+    canvas.setFont('NotoSansSC', SZ_FNT_LG)
+    x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(data.wrd_chn, 'NotoSansSC', SZ_FNT_LG) / 2)
     y += HGHT_TXT + SPC_SML
     canvas.drawString(x, y, data.wrd_chn)
 
@@ -108,7 +109,6 @@ def draw_card(data: CardInfo, canvas: Canvas, offset_x: int, offset_y: int):
 
 if __name__ == "__main__":
     canvas = Canvas("flashcards.pdf", pagesize=LETTER)
-    registerFont(UnicodeCIDFont('STSong-Light'))
     registerFont(TTFont('NotoSans', 'NotoSans-Regular.ttf'))
     registerFont(TTFont('NotoSansSC', 'NotoSansSC-Regular.ttf'))
 
