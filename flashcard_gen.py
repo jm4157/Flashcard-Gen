@@ -4,19 +4,18 @@ generates a pdf of flashcards of those words.
 @author Judah Munoz
 """
 from reportlab.pdfgen.canvas import Canvas
-from reportlab.lib.pagesizes import LETTER
+from reportlab.lib.pagesizes import LETTER, landscape
 from reportlab.lib.units import inch
 from reportlab.pdfbase.pdfmetrics import stringWidth, registerFont
 from reportlab.pdfbase.ttfonts import TTFont
 from PIL import Image
 
 
-MRGN_HORZ = int(0.2 * inch)
-MRGN_VERT = int(0.4 * inch)       # MRGN is the length of the page margin
-SPC_HORZ  = int(0.1 * inch)
-SPC_VERT  = int(0.2 * inch)       # SPC is the space between the cards
-CARD_WDTH = int(4 * inch)
-CARD_HGHT = int(5 * inch)
+MRGN_HORZ = int(0.35 * inch)
+MRGN_VERT = int(0.50 * inch)    # MRGN is the length of the page margin
+SPC_HORZ  = int(0.30 * inch)    # SPC is the space between the cards    
+CARD_WDTH = int(5.00 * inch)
+CARD_HGHT = int(7.50 * inch)
 # The program asumes that 2MRGN_VERT + 2CARD_HGHT + SPC_VERT = 11 inches and
 # 2MRGN_HORZ + 2CARD_WDTH + SPC_HORZ = 8.5 inches to fit US letter paper
 
@@ -31,9 +30,7 @@ SZ_FNT_SML = 16
 
 OFFSETS = [
     (MRGN_HORZ,                        MRGN_VERT), 
-    (MRGN_HORZ,                        MRGN_VERT + CARD_HGHT + SPC_VERT),
-    (MRGN_HORZ + CARD_WDTH + SPC_HORZ, MRGN_VERT), 
-    (MRGN_HORZ + CARD_WDTH + SPC_HORZ, MRGN_VERT + CARD_HGHT + SPC_VERT)
+    (MRGN_HORZ + CARD_WDTH + SPC_HORZ, MRGN_VERT)
     ]
 """A list of offsets used to place the front of each card onto the canvas."""
 
@@ -60,7 +57,7 @@ def draw_cardset(cards: list[CardInfo], canvas: Canvas):
     @param cards: a list of CardInfo
     @param canvas: the canvas to draw onto
     """
-    for i in range(0, 4): # Draw the front of each card
+    for i in range(0, 2): # Draw the front of each card
         data = cards[i]
         (offset_x, offset_y) = OFFSETS[i]
 
@@ -75,40 +72,40 @@ def draw_card(data: CardInfo, canvas: Canvas, offset_x: int, offset_y: int):
     @param offset_x: the offset along the x axis
     @param offset_y: the offset along the y axis
     """
-    canvas.rect(offset_x, offset_y, CARD_WDTH, CARD_HGHT, fill=False, stroke=True)
+    canvas.roundRect(offset_x, offset_y, CARD_WDTH, CARD_HGHT, 5, fill=False, stroke=True)
 
-    canvas.drawInlineImage("qr/" + data.qr, offset_x + CARD_WDTH - SPC_TNY - SZ_QR, offset_y + SPC_TNY, SZ_QR, SZ_QR)
+    # canvas.drawInlineImage("qr/" + data.qr, offset_x + CARD_WDTH - SPC_TNY - SZ_QR, offset_y + SPC_TNY, SZ_QR, SZ_QR)
 
-    canvas.setFont('NotoSans', SZ_FNT_SML)
-    x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(data.xmpl_eng, 'NotoSans', SZ_FNT_SML) / 2)
-    y = offset_y + 2* SPC_LG
-    canvas.drawString(x, y, data.xmpl_eng)
+    # canvas.setFont('NotoSans', SZ_FNT_SML)
+    # x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(data.xmpl_eng, 'NotoSans', SZ_FNT_SML) / 2)
+    # y = offset_y + 2* SPC_LG
+    # canvas.drawString(x, y, data.xmpl_eng)
 
-    canvas.setFont('NotoSansSC', SZ_FNT_SML)
-    x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(data.xmpl_chn, 'NotoSansSC', SZ_FNT_SML) / 2)
-    y += HGHT_TXT + SPC_SML
-    canvas.drawString(x, y, data.xmpl_chn)
+    # canvas.setFont('NotoSansSC', SZ_FNT_SML)
+    # x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(data.xmpl_chn, 'NotoSansSC', SZ_FNT_SML) / 2)
+    # y += HGHT_TXT + SPC_SML
+    # canvas.drawString(x, y, data.xmpl_chn)
 
-    canvas.setFont('NotoSans', SZ_FNT_LG)
-    ln = data.wrd_eng + " - " + data.phon
-    x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(ln, 'NotoSans', SZ_FNT_LG) / 2)
-    y += HGHT_TXT + SPC_LG
-    canvas.drawString(x, y, ln)
+    # canvas.setFont('NotoSans', SZ_FNT_LG)
+    # ln = data.wrd_eng + " - " + data.phon
+    # x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(ln, 'NotoSans', SZ_FNT_LG) / 2)
+    # y += HGHT_TXT + SPC_LG
+    # canvas.drawString(x, y, ln)
 
-    canvas.setFont('NotoSansSC', SZ_FNT_LG)
-    x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(data.wrd_chn, 'NotoSansSC', SZ_FNT_LG) / 2)
-    y += HGHT_TXT + SPC_SML
-    canvas.drawString(x, y, data.wrd_chn)
+    # canvas.setFont('NotoSansSC', SZ_FNT_LG)
+    # x = offset_x + int(CARD_WDTH / 2) - int(stringWidth(data.wrd_chn, 'NotoSansSC', SZ_FNT_LG) / 2)
+    # y += HGHT_TXT + SPC_SML
+    # canvas.drawString(x, y, data.wrd_chn)
 
-    img_width = int(data.img_ratio * HGHT_IMG)
-    x = offset_x + int(CARD_WDTH / 2) - int(img_width / 2)
-    y += HGHT_TXT + SPC_LG
-    canvas.drawInlineImage("pic/" + data.img, x, y, img_width, HGHT_IMG)
+    # img_width = int(data.img_ratio * HGHT_IMG)
+    # x = offset_x + int(CARD_WDTH / 2) - int(img_width / 2)
+    # y += HGHT_TXT + SPC_LG
+    # canvas.drawInlineImage("pic/" + data.img, x, y, img_width, HGHT_IMG)
 
 
 
 if __name__ == "__main__":
-    canvas = Canvas("flashcards.pdf", pagesize=LETTER)
+    canvas = Canvas("flashcards.pdf", pagesize=landscape(LETTER))
     registerFont(TTFont('NotoSans', 'NotoSans-Regular.ttf'))
     registerFont(TTFont('NotoSansSC', 'NotoSansSC-Regular.ttf'))
 
